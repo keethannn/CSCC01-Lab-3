@@ -104,6 +104,17 @@ app.delete("/deleteNote/:noteId", express.json(), async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 })
+
+app.delete("/deleteAllNotes", express.json(), async (req, res) => {
+  try {
+    // Find notes with username attached to them
+    const collection = db.collection(COLLECTIONS.notes);
+    const data = await collection.drop();
+    res.json({ response: data });
+  } catch (error) {
+    res.status(500).json({error: error.message})
+  }
+})
   
 // Patch a note
 app.patch("/patchNote/:noteId", express.json(), async (req, res) => {
@@ -126,7 +137,6 @@ app.patch("/patchNote/:noteId", express.json(), async (req, res) => {
     // Find note with given ID
     const collection = db.collection(COLLECTIONS.notes);
     const data = await collection.updateOne({
-      username: decoded.username,
       _id: new ObjectId(noteId),
     }, {
       $set: {
